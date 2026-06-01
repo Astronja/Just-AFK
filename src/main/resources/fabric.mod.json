@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "just-afk",
+  "version": "${version}",
+  "name": "Just AFK",
+  "description": "A server-side AFK mod with invincibility and movement blocking",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/just-afk/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "com.justafk.AfkMod"
+    ]
+  },
+  "mixins": [
+    "just-afk.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "1.21.11",
+    "fabric-api": "*"
+  }
+}
