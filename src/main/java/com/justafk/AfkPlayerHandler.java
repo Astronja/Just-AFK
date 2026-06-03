@@ -187,36 +187,19 @@ public enum AfkPlayerHandler {
                 }
             }
 
-            // ── 3. Check position + rotation changes ───────────
+            // ── 3. Check mouse movement (yaw/pitch change) ────
             if (!shouldExit) {
                 AfkSnapshot snap = afkSnapshots.get(uuid);
                 if (snap != null) {
-                    double dx = player.getX() - snap.pos().getX();
-                    double dz = player.getZ() - snap.pos().getZ();
-                    double dy = player.getY() - snap.pos().getY();
-
-                    // Horizontal movement
-                    if (dx * dx + dz * dz > 0.0001) {
+                    float yawDiff = Math.abs(player.getYaw() - snap.yaw());
+                    float pitchDiff = Math.abs(player.getPitch() - snap.pitch());
+                    if (yawDiff > 5.0f || pitchDiff > 5.0f) {
                         shouldExit = true;
-                    }
-
-                    // Vertical movement (gravity-resistant threshold)
-                    if (!shouldExit && Math.abs(dy) > 0.06) {
-                        shouldExit = true;
-                    }
-
-                    // Yaw / pitch change (mouse movement) — exclude tiny escape-key jitter
-                    if (!shouldExit) {
-                        float yawDiff = Math.abs(player.getYaw() - snap.yaw());
-                        float pitchDiff = Math.abs(player.getPitch() - snap.pitch());
-                        if (yawDiff > 5.0f || pitchDiff > 5.0f) {
-                            shouldExit = true;
-                        }
                     }
                 }
             }
 
-            // ── Exit if triggered ──────────────────────────────
+            // ── Exit if player-initiated input detected ────────
             if (shouldExit) {
                 toggleAfk(player);
                 player.sendMessage(
@@ -224,6 +207,16 @@ public enum AfkPlayerHandler {
                         false
                 );
                 continue;
+            }
+
+            // ── Snap position back to AFK spot (prevents external forces like lava/water) ──
+            AfkSnapshot snap = afkSnapshots.get(uuid);
+            if (snap != null) {
+                if (player.getX() != snap.pos().getX()
+                        || player.getY() != snap.pos().getY()
+                        || player.getZ() != snap.pos().getZ()) {
+                    player.requestTeleport(snap.pos().getX(), snap.pos().getY(), snap.pos().getZ());
+                }
             }
 
             // ── Maintain invulnerability ─────────────────────────
