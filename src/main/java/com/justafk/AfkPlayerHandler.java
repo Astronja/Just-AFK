@@ -107,7 +107,7 @@ public enum AfkPlayerHandler {
             // ── Velocity check: must be nearly stationary ────────
             Vec3d vel = player.getVelocity();
             if (Math.sqrt(vel.x * vel.x + vel.z * vel.z) >= HALF_WALK_SPEED
-                    || Math.abs(vel.y) > 1.0E-3) {
+                    || !player.isOnGround()) {
                 player.sendMessage(Text.literal("§cYou must be standing still to go AFK."), false);
                 return false;
             }
@@ -227,12 +227,15 @@ public enum AfkPlayerHandler {
                 continue;
             }
 
-            // ── Snap position back to AFK spot (prevents external forces like lava/water) ──
+            // ── Snap position back to AFK spot (prevents external forces like lava/water/falling) ──
             AfkSnapshot snap = afkSnapshots.get(uuid);
             if (snap != null) {
                 if (player.getX() != snap.pos().getX()
                         || player.getY() != snap.pos().getY()
                         || player.getZ() != snap.pos().getZ()) {
+                    player.setPosition(snap.pos().getX(), snap.pos().getY(), snap.pos().getZ());
+                    player.setYaw(snap.yaw());
+                    player.setPitch(snap.pitch());
                     player.requestTeleport(snap.pos().getX(), snap.pos().getY(), snap.pos().getZ());
                 }
             }
