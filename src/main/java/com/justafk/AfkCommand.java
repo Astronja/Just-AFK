@@ -27,6 +27,7 @@ public class AfkCommand {
                         return 0;
                     }
 
+                    boolean wasAfk = AfkPlayerHandler.INSTANCE.isAfk(player);
                     boolean nowAfk = AfkPlayerHandler.INSTANCE.toggleAfk(player);
 
                     if (nowAfk) {
@@ -34,7 +35,7 @@ public class AfkCommand {
                                 () -> Text.literal("§4You are now in AFK mode.§r\n§7Type '/afk' or move to quit."),
                                 false
                         );
-                    } else {
+                    } else if (wasAfk) {
                         source.sendFeedback(
                                 () -> Text.literal("§aYou have exited AFK mode."),
                                 false

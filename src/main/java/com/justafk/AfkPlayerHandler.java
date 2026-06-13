@@ -44,6 +44,9 @@ public enum AfkPlayerHandler {
     /** Tick counter for periodic title refresh */
     private int tickCounter = 0;
 
+    /** Half of default walking speed threshold for AFK entry */
+    private static final double HALF_WALK_SPEED = 0.05;
+
     // ─── Snapshot record ─────────────────────────────────────────────
 
     private record AfkSnapshot(Vec3d pos, float yaw, float pitch) {}
@@ -101,6 +104,13 @@ public enum AfkPlayerHandler {
 
             return false;
         } else {
+            // ── Velocity check: horizontal speed must be below threshold ────────
+            Vec3d vel = player.getVelocity();
+            if (Math.sqrt(vel.x * vel.x + vel.z * vel.z) >= HALF_WALK_SPEED) {
+                player.sendMessage(Text.literal("§cYou must be standing still to go AFK."), false);
+                return false;
+            }
+
             // ── Enter AFK mode ───────────────────────────────────
             afkPlayers.add(uuid);
             afkSnapshots.put(uuid, new AfkSnapshot(
@@ -133,6 +143,13 @@ public enum AfkPlayerHandler {
             return Text.literal("§7§o" + player.getName().getString());
         }
         return null;
+    }
+
+    /**
+     * Check whether a player is currently in AFK mode.
+     */
+    public boolean isAfk(ServerPlayerEntity player) {
+        return afkPlayers.contains(player.getUuid());
     }
 
     /**

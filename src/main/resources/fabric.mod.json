@@ -8,7 +8,7 @@
   "contact": {},
   "license": "MIT",
   "icon": "assets/just-afk/icon.png",
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {
     "main": [
       "com.justafk.AfkMod"
