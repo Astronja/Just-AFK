@@ -104,9 +104,10 @@ public enum AfkPlayerHandler {
 
             return false;
         } else {
-            // ── Velocity check: horizontal speed must be below threshold ────────
+            // ── Velocity check: must be nearly stationary ────────
             Vec3d vel = player.getVelocity();
-            if (Math.sqrt(vel.x * vel.x + vel.z * vel.z) >= HALF_WALK_SPEED) {
+            if (Math.sqrt(vel.x * vel.x + vel.z * vel.z) >= HALF_WALK_SPEED
+                    || Math.abs(vel.y) > 1.0E-3) {
                 player.sendMessage(Text.literal("§cYou must be standing still to go AFK."), false);
                 return false;
             }
